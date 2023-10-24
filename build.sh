@@ -1,23 +1,21 @@
-#
-# Set up Tizen Studio
-#
-TIZEN_STUDIO="$GITHUB_WORKSPACE/tizen-studio"
-INSTALLER="$GITHUB_WORKSPACE/tizen-studio_5.1.bin"
-
-wget -nc -O "$INSTALLER"  http://download.tizen.org/sdk/Installer/tizen-studio_5.1/web-cli_Tizen_Studio_5.1_ubuntu-64.bin
-chmod a+x "$INSTALLER"
-"$INSTALLER" --accept-license $TIZEN_STUDIO
-
-PATH="$TIZEN_STUDIO/tools/ide/bin:$PATH"
-
-#
 # Parse arguments
-#
 if [$8 -eq 'partner']; then
     PRIVILEGE=parner
 else
     PRIVILEGE=public
 fi
+
+TIZEN_STUDIO_VERSION="${9:-5.1}"
+
+# Install Tizen Studio
+TIZEN_STUDIO="$GITHUB_WORKSPACE/tizen-studio"
+INSTALLER="$GITHUB_WORKSPACE/tizen-studio_$TIZEN_STUDIO_VERSION.bin"
+
+wget -nc -O "$INSTALLER"  http://download.tizen.org/sdk/Installer/tizen-studio_$TIZEN_STUDIO_VERSION/web-cli_Tizen_Studio_${TIZEN_STUDIO_VERSION}_ubuntu-64.bin
+chmod a+x "$INSTALLER"
+"$INSTALLER" --accept-license $TIZEN_STUDIO
+
+PATH="$TIZEN_STUDIO/tools/ide/bin:$PATH"
 
 PROJECT_DIR="$1"
 
@@ -58,12 +56,11 @@ Build and signing parameters:
  - distributor-cert: $DISTRIBUTOR_CERT
  - distributor-key: $DISTRIBUTOR_KEY
  - distributor-password: ***
+ - version: $TIZEN_STUDIO_VERSION
  - privilege: $PRIVILEGE
 EOF
 
-#
 # Create profiles.xml
-#
 GLOBAL_PROFILES_PATH="$(tizen cli-config -l | grep -i 'default.profiles.path=' | sed 's/^default\.profiles\.path=//g')"
 cat <<EOF >"$GLOBAL_PROFILES_PATH"
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -77,9 +74,7 @@ cat <<EOF >"$GLOBAL_PROFILES_PATH"
 EOF
 chmod a-w "$GLOBAL_PROFILES_PATH"
 
-#
-# Build and sign
-#
+# Build
 PACKAGE_OUTPUT_PATH="$PROJECT_DIR/output.wgt"
 ERROR_LOG="$GITHUB_WORKSPACE/tizen-studio-data/cli/logs/cli.log"
 
@@ -94,9 +89,7 @@ else
     cat "$ERROR_LOG"
 fi
 
-#
 # Clean up
-#
 tizen clean -- "$PROJECT_DIR"
 
 rm -rf "$GLOBAL_PROFILES_PATH" \
