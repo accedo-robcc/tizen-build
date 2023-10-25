@@ -13,7 +13,7 @@ INSTALLER="$GITHUB_WORKSPACE/tizen-studio_$TIZEN_STUDIO_VERSION.bin"
 
 wget -nc -O "$INSTALLER"  http://download.tizen.org/sdk/Installer/tizen-studio_$TIZEN_STUDIO_VERSION/web-cli_Tizen_Studio_${TIZEN_STUDIO_VERSION}_ubuntu-64.bin
 chmod a+x "$INSTALLER"
-"$INSTALLER" --no-java-check --accept-license $TIZEN_STUDIO
+"$INSTALLER" --accept-license $TIZEN_STUDIO
 
 PATH="$TIZEN_STUDIO/tools/ide/bin:$PATH"
 
