@@ -1,5 +1,5 @@
 # Parse arguments
-if [ $8 == "partner" ]; then
+if [ $8 -eq 'partner' ]; then
     PRIVILEGE=parner
 else
     PRIVILEGE=public
